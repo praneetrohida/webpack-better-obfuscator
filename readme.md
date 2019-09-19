@@ -1,17 +1,21 @@
-# javascript-obfuscator plugin for Webpack
+# javascript-obfuscator plugin for Webpack which supports sourcemaps
 
-[![npm version](https://badge.fury.io/js/webpack-obfuscator.svg)](https://badge.fury.io/js/webpack-obfuscator)
+## Note
+
+This repo is forked from [webpack-obfuscator](https://github.com/javascript-obfuscator/webpack-obfuscator). A few things have been changed to fix the sourcemap generation which does not work as expected in the original package. Since the obfuscation is done now in the `optimizeChunkAssets` hook, the `selfDefending` option **may not work.**
+
+[![npm version](https://badge.fury.io/js/webpack-better-obfuscator.svg)](https://badge.fury.io/js/webpack-better-obfuscator)
 
 ### Installation
 
 Install the package with NPM and add it to your devDependencies:
 
-`npm install --save-dev webpack-obfuscator`
+`npm install --save-dev webpack-better-obfuscator`
 
 ### Usage:
 
 ```javascript
-var JavaScriptObfuscator = require('webpack-obfuscator');
+var JavaScriptObfuscator = require('webpack-better-obfuscator');
 
 // ...
 
@@ -24,6 +28,7 @@ plugins: [
 ```
 
 ### obfuscatorOptions
+
 Type: `Object` Default: `null`
 
 Options for [javascript-obfuscator](https://github.com/javascript-obfuscator/javascript-obfuscator). Should be passed exactly like described on their page.
@@ -31,6 +36,7 @@ Options for [javascript-obfuscator](https://github.com/javascript-obfuscator/jav
 **Warning:** right now plugin not supported `souceMap` and `souceMapMode` options!
 
 ### excludes
+
 Type: `Array` or `String` Default: `[]`
 
 Bundle name is output file name after webpack compilation. With multiple webpack entries you can set bundle name in `output` object with aliases `[name]` or `[id]`.
@@ -39,13 +45,13 @@ Syntax for excludes array is syntax for [multimatch](https://github.com/sindreso
 
 Few syntax examples: `['excluded_bundle_name.js', '**_bundle_name.js'] or 'excluded_bundle_name.js'`
 
-
 Example:
+
 ```
 // webpack.config.js
 'use strict';
 
-const JavaScriptObfuscator = require('webpack-obfuscator');
+const JavaScriptObfuscator = require('webpack-better-obfuscator');
 
 module.exports = {
     entry: {
@@ -67,16 +73,17 @@ module.exports = {
 Can be used to bypass obfuscation of some files.
 
 ### License
+
 Copyright (C) 2017 [Timofey Kachalov](http://github.com/sanex3339).
 
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions are met:
 
-  * Redistributions of source code must retain the above copyright
-    notice, this list of conditions and the following disclaimer.
-  * Redistributions in binary form must reproduce the above copyright
-    notice, this list of conditions and the following disclaimer in the
-    documentation and/or other materials provided with the distribution.
+- Redistributions of source code must retain the above copyright
+  notice, this list of conditions and the following disclaimer.
+- Redistributions in binary form must reproduce the above copyright
+  notice, this list of conditions and the following disclaimer in the
+  documentation and/or other materials provided with the distribution.
 
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
