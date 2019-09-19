@@ -13,32 +13,38 @@ class WebpackObfuscator {
         this.excludes = this.excludes.concat(excludes || []);
     }
     apply(compiler) {
-        const isDevServer = process.argv.find(v => v.includes('webpack-dev-server'));
+        const isDevServer = process.argv.find(v => v.includes("webpack-dev-server"));
         if (isDevServer) {
-            console.info('JavascriptObfuscator is disabled on webpack-dev-server as the reloading scripts ', 'and the obfuscator can interfere with each other and break the build');
+            console.info("JavascriptObfuscator is disabled on webpack-dev-server as the reloading scripts ", "and the obfuscator can interfere with each other and break the build");
             return;
         }
         const pluginName = this.constructor.name;
-        compiler.hooks.emit.tap(pluginName, (compilation) => {
-            compilation.chunks.forEach(chunk => {
-                chunk.files.forEach((fileName) => {
-                    if (!fileName.toLowerCase().endsWith('.js') || this.shouldExclude(fileName)) {
+        compiler.hooks.compilation.tap(pluginName, compilation => {
+            compilation.hooks.optimizeChunkAssets.tapAsync(pluginName, (chunks, callback) => {
+                Array.from(chunks)
+                    .reduce((acc, chunk) => acc.concat(chunk.files || []), [])
+                    .concat(compilation.additionalChunkAssets || [])
+                    .slice(1)
+                    .forEach((file) => {
+                    if (!file.toLowerCase().endsWith(".js") ||
+                        this.shouldExclude(file)) {
                         return;
                     }
-                    const asset = compilation.assets[fileName];
+                    const asset = compilation.assets[file];
                     const { inputSource, inputSourceMap } = this.extractSourceAndSourceMap(asset);
                     const { obfuscatedSource, obfuscationSourceMap } = this.obfuscate(inputSource);
                     if (this.options.sourceMap && inputSourceMap) {
                         const transferredSourceMap = transferSourceMap({
                             fromSourceMap: obfuscationSourceMap,
-                            toSourceMap: inputSource
+                            toSourceMap: inputSourceMap
                         });
-                        compilation.assets[fileName] = new webpack_sources_1.SourceMapSource(obfuscatedSource, fileName, transferredSourceMap, inputSource, inputSourceMap);
+                        compilation.assets[file] = new webpack_sources_1.SourceMapSource(obfuscatedSource, file, transferredSourceMap, inputSource, inputSourceMap);
                     }
                     else {
-                        compilation.assets[fileName] = new webpack_sources_1.RawSource(obfuscatedSource);
+                        compilation.assets[file] = new webpack_sources_1.RawSource(obfuscatedSource);
                     }
                 });
+                callback();
             });
         });
     }
