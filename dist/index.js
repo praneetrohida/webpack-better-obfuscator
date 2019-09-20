@@ -20,7 +20,7 @@ class WebpackObfuscator {
         }
         const pluginName = this.constructor.name;
         compiler.hooks.compilation.tap(pluginName, compilation => {
-            compilation.hooks.optimizeChunkAssets.tapAsync(pluginName, (chunks, callback) => {
+            compilation.hooks.afterOptimizeChunkAssets.tap(pluginName, chunks => {
                 Array.from(chunks)
                     .reduce((acc, chunk) => acc.concat(chunk.files || []), [])
                     .concat(compilation.additionalChunkAssets || [])
@@ -44,7 +44,6 @@ class WebpackObfuscator {
                         compilation.assets[file] = new webpack_sources_1.RawSource(obfuscatedSource);
                     }
                 });
-                callback();
             });
         });
     }
