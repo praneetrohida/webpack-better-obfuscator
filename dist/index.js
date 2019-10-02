@@ -24,7 +24,6 @@ class WebpackObfuscator {
                 Array.from(chunks)
                     .reduce((acc, chunk) => acc.concat(chunk.files || []), [])
                     .concat(compilation.additionalChunkAssets || [])
-                    .slice(1)
                     .forEach((file) => {
                     if (!file.toLowerCase().endsWith(".js") ||
                         this.shouldExclude(file)) {
